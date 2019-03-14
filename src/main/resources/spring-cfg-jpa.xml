@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+          				   http://www.springframework.org/schema/tx
+          				   http://www.springframework.org/schema/tx/spring-tx.xsd
+          				   http://www.springframework.org/schema/data/jpa
+          				   http://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"  init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}" />
+        <property name="url" value="${db.url}" />
+        <property name="username" value="${db.username}" />
+        <property name="password" value="${db.password}" />
+        <property name="filters" value="${db.filters}" />
+        <property name="maxActive" value="${db.maxActive}" />
+        <property name="initialSize" value="${db.initialSize}" />
+        <property name="maxWait" value="${db.maxWait}" />
+        <property name="minIdle" value="${db.minIdle}" />
+        <property name="timeBetweenEvictionRunsMillis" value="${db.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${db.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${db.validationQuery}"/>
+        <property name="testWhileIdle" value="${db.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${db.testOnBorrow}"/>
+        <property name="testOnReturn" value="${db.testOnReturn}"/>
+        <property name="poolPreparedStatements" value="${db.poolPreparedStatements}"/>
+        <property name="maxOpenPreparedStatements" value="${db.maxOpenPreparedStatements}"/>
+
+    </bean>
+
+
+
+    <!-- Hibernate对Jpa的实现 -->
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <!--3 Spring整合jpa -->
+    <!--配置实体管理工厂-->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan"  >
+            <list>
+                <value>com.jdb.model</value>
+            </list>
+        </property>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"></property>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+        </property>
+        <property name="jpaProperties">
+            <map>
+                <entry key="hibernate.query.substitutions" value="true 1, false 0" />
+                <entry key="hibernate.default_batch_fetch_size" value="16" />
+                <entry key="hibernate.max_fetch_depth" value="2" />
+                <entry key="hibernate.generate_statistics" value="true" />
+                <entry key="hibernate.bytecode.use_reflection_optimizer" value="true" />
+                <entry key="hibernate.cache.use_second_level_cache" value="false" />
+                <entry key="hibernate.cache.use_query_cache" value="false" />
+                <entry key="hibernate.id.new_generator_mappings" value="false"/>
+                <entry key="hibernate.dialect.storage_engine" value="innodb"/>
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect"/>
+            </map>
+        </property>
+    </bean>
+    <!--4 事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+    <!--5 采用注释的方式管理事务-->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+    <!-- 在服务启动时，将dao层接加入到容器管理中。ExtImpl（如果有实现类的话） -->
+    <jpa:repositories base-package="com.jdb.dao.**"
+                      query-lookup-strategy="create-if-not-found" repository-impl-postfix="ExtImpl"
+                      entity-manager-factory-ref="entityManagerFactory"
+                      transaction-manager-ref="transactionManager">
+    </jpa:repositories>
+
+
+
+    <!-- 启动对@AspectJ（面向切面）注解的支持 -->
+    <!--<aop:aspectj-autoproxy />-->
+
+
+
+</beans>
