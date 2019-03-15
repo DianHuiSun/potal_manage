@@ -11,6 +11,8 @@
 
 
     <context:property-placeholder location="classpath:jdbc.properties"/>
+
+
     <context:component-scan base-package="com.jdb" >
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>

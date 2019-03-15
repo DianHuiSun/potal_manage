@@ -21,14 +21,14 @@ public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    protected Long id;
+    protected Integer id;
 
     /**
      * @see
      *
      * 1:有效,0无效
      */
-    protected Integer yn;
+    protected Integer yn = 1;
 
     /**
      * 创建人
@@ -50,11 +50,11 @@ public class BaseEntity implements Serializable {
      */
     protected Date changeTime;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

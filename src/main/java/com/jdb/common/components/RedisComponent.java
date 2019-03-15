@@ -55,7 +55,7 @@ public class RedisComponent {
     }
 
 
-    @Resource(name = "redisTemplate")
+//    @Resource(name = "redisTemplate")
     private RedisTemplate<String, String> redisTemplate;
 
     /**
