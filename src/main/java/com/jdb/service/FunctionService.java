@@ -1,6 +1,7 @@
 package com.jdb.service;
 
 import com.jdb.common.service.BaseService;
+import com.jdb.model.Function;
 import com.jdb.model.Role;
 
 /**
@@ -9,6 +10,6 @@ import com.jdb.model.Role;
  * @date：
  * @version： 1.0
  */
-public interface FunctionService extends BaseService<Role,Integer> {
+public interface FunctionService extends BaseService<Function,Integer> {
 
 }
